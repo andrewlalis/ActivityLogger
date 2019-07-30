@@ -67,7 +67,7 @@ public class DatabaseManager {
             ResultSet results = statement.getGeneratedKeys();
             results.next();
             int id = results.getInt(1);
-            logger.log(Level.INFO, "Inserted a new entry with id = " + id);
+            logger.log(Level.FINE, "Inserted a new entry with id = " + id);
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "An error occurred while inserting an entry: " + e.getMessage());
         }
