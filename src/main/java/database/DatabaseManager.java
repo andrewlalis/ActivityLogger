@@ -27,6 +27,9 @@ public class DatabaseManager {
         this.initializeDatabase();
     }
 
+    /**
+     * Initializes the connection to the database, and ensures that the schema is up-to-date.
+     */
     private void initializeDatabase() {
         try {
             this.connection = DriverManager.getConnection(URL);
@@ -40,11 +43,33 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * Closes the database connection that this manager has maintained.
+     */
     public void close() {
         try {
             this.connection.close();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Could not close connection to the database.");
+        }
+    }
+
+    /**
+     * Inserts an entry into the database at the current time.
+     * @param entry The entry to add.
+     */
+    public void insertEntry(Entry entry) {
+        try {
+            PreparedStatement statement = this.connection.prepareStatement(SqlReader.readFromFile("insert_entry.sql"));
+            statement.setInt(1, entry.getEntryType().getValue());
+            statement.setString(2, entry.getUser());
+            statement.executeUpdate();
+            ResultSet results = statement.getGeneratedKeys();
+            results.next();
+            int id = results.getInt(1);
+            logger.log(Level.INFO, "Inserted a new entry with id = " + id);
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "An error occurred while inserting an entry: " + e.getMessage());
         }
     }
 
@@ -72,25 +97,6 @@ public class DatabaseManager {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "An error occurred while selecting an entry: " + e.getMessage());
             return null;
-        }
-    }
-
-    /**
-     * Inserts an entry into the database at the current time.
-     * @param entry The entry to add.
-     */
-    public void insertEntry(Entry entry) {
-        try {
-            PreparedStatement statement = this.connection.prepareStatement(SqlReader.readFromFile("insert_entry.sql"));
-            statement.setInt(1, entry.getEntryType().getValue());
-            statement.setString(2, entry.getUser());
-            statement.executeUpdate();
-            ResultSet results = statement.getGeneratedKeys();
-            results.next();
-            int id = results.getInt(1);
-            logger.log(Level.INFO, "Inserted a new entry with id = " + id);
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "An error occurred while inserting an entry: " + e.getMessage());
         }
     }
 
