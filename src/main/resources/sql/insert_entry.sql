@@ -1,0 +1,1 @@
+INSERT INTO entries (entry_type, user) VALUES (?, ?);

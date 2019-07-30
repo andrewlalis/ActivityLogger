@@ -1,0 +1,1 @@
+SELECT id, datetime(occurred_at, 'localtime') as occurred_at, entry_type, user FROM entries WHERE id = ?;
