@@ -6,6 +6,8 @@ import nl.andrewlalis.activitylogger.model.EntryType;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,6 +75,17 @@ public class DatabaseManager {
         }
     }
 
+    private Entry getEntryFromResultSet(ResultSet results) throws SQLException {
+        int id = results.getInt("id");
+        EntryType entryType = EntryType.fromValue(results.getInt("entry_type"));
+        String user = results.getString("user");
+        String occuredAtString = results.getString("occurred_at");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime occurredAt = LocalDateTime.parse(occuredAtString, formatter);
+
+        return new Entry(id, entryType, occurredAt, user);
+    }
+
     /**
      * Selects an entry from the nl.andrewlalis.activitylogger.database with the given id.
      * @param id The id to use to find an entry.
@@ -83,21 +96,57 @@ public class DatabaseManager {
             PreparedStatement statement = this.connection.prepareStatement(SqlReader.readFromFile("select_entry_by_id.sql"));
             statement.setInt(1, id);
             ResultSet results = statement.executeQuery();
-            if (!results.next()) {
-                return null;
+            if (results.next()) {
+                return this.getEntryFromResultSet(results);
             }
-
-            EntryType entryType = EntryType.fromValue(results.getInt("entry_type"));
-            String user = results.getString("user");
-            String occuredAtString = results.getString("occurred_at");
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            LocalDateTime occurredAt = LocalDateTime.parse(occuredAtString, formatter);
-
-            return new Entry(id, entryType, occurredAt, user);
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "An error occurred while selecting an entry: " + e.getMessage());
-            return null;
         }
+        return null;
     }
 
+    /**
+     * Gets the most recent entry of the specified type.
+     * @param type The type of entry to get.
+     * @param user The user to get the most recent entry for.
+     * @return The most recent entry of the specified type, or null if none could be found.
+     */
+    public Entry selectMostRecentEntry(EntryType type, String user) {
+        try {
+            PreparedStatement statement = this.connection.prepareStatement(SqlReader.readFromFile("select_entry_most_recent_type.sql"));
+            statement.setInt(1, type.getValue());
+            statement.setString(2, user);
+            ResultSet results = statement.executeQuery();
+            if (results.next()) {
+                return this.getEntryFromResultSet(results);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "An error occurred while selecting an entry: " + e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Get all the entries since the most recent entry of a particular type occurred, for a particular user.
+     * @param type The type of entry which marks the beginning of what should be returned.
+     * @param user The user by which to filter the entries.
+     * @return A list of entries, in ascending order, which occurred after the most recent entry of the given type.
+     */
+    public List<Entry> selectEntriesSinceMostRecentEntry(EntryType type, String user) {
+        try {
+            PreparedStatement statement = this.connection.prepareStatement(SqlReader.readFromFile("select_entries_since_most_recent_type.sql"));
+            statement.setInt(1, type.getValue());
+            statement.setString(2, user);
+            statement.setString(3, user);
+            ResultSet results = statement.executeQuery();
+            List<Entry> entries = new ArrayList<>();
+            while (results.next()) {
+                entries.add(this.getEntryFromResultSet(results));
+            }
+            return entries;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "An error occurred while selecting entries: " + e.getMessage());
+        }
+        return new ArrayList<>();
+    }
 }
