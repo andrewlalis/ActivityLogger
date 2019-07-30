@@ -1,10 +1,10 @@
-package model;
+package nl.andrewlalis.activitylogger.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Represents one activity entry in the database. This is usually either starting or stopping some activity.
+ * Represents one activity entry in the nl.andrewlalis.activitylogger.database. This is usually either starting or stopping some activity.
  */
 public class Entry {
 

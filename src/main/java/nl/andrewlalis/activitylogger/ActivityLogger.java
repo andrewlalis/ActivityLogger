@@ -1,6 +1,8 @@
-import database.DatabaseManager;
-import model.Entry;
-import model.EntryType;
+package nl.andrewlalis.activitylogger;
+
+import nl.andrewlalis.activitylogger.database.DatabaseManager;
+import nl.andrewlalis.activitylogger.model.Entry;
+import nl.andrewlalis.activitylogger.model.EntryType;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
@@ -17,7 +19,7 @@ public class ActivityLogger {
     private static final Logger logger = Logger.getLogger(ActivityLogger.class.getName());
 
     public static void main(String[] args) throws ParseException {
-        logger.log(Level.INFO, "Starting ActivityLogger...");
+        logger.log(Level.INFO, "Starting nl.andrewlalis.activitylogger.ActivityLogger...");
 
         DatabaseManager manager = new DatabaseManager();
         CommandLine cmd = new DefaultParser().parse(getOptions(), args);
@@ -38,6 +40,9 @@ public class ActivityLogger {
                     manager.insertEntry(new Entry(entryType, user));
                 }
             }
+        } else {
+            // Start running application.
+
         }
 
         manager.close();

@@ -1,4 +1,4 @@
-package database;
+package nl.andrewlalis.activitylogger.database;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

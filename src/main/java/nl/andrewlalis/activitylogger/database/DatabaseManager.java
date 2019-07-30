@@ -1,7 +1,7 @@
-package database;
+package nl.andrewlalis.activitylogger.database;
 
-import model.Entry;
-import model.EntryType;
+import nl.andrewlalis.activitylogger.model.Entry;
+import nl.andrewlalis.activitylogger.model.EntryType;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This class handles the various tedious tasks associated with maintaining a database.
+ * This class handles the various tedious tasks associated with maintaining a nl.andrewlalis.activitylogger.database.
  */
 public class DatabaseManager {
 
@@ -19,7 +19,7 @@ public class DatabaseManager {
     private static final String URL = "jdbc:sqlite:my_db.sqlite3";
 
     /**
-     * The connection to the database. This is maintained during the lifetime of this class.
+     * The connection to the nl.andrewlalis.activitylogger.database. This is maintained during the lifetime of this class.
      */
     private Connection connection;
 
@@ -28,34 +28,34 @@ public class DatabaseManager {
     }
 
     /**
-     * Initializes the connection to the database, and ensures that the schema is up-to-date.
+     * Initializes the connection to the nl.andrewlalis.activitylogger.database, and ensures that the schema is up-to-date.
      */
     private void initializeDatabase() {
         try {
             this.connection = DriverManager.getConnection(URL);
-            logger.log(Level.FINE, "Obtained a valid connection to the database.");
+            logger.log(Level.FINE, "Obtained a valid connection to the nl.andrewlalis.activitylogger.database.");
 
             Statement statement = this.connection.createStatement();
             statement.execute(SqlReader.readFromFile("schema.sql"));
             logger.log(Level.FINE, "Executed schema.sql.");
         } catch (SQLException exception) {
-            logger.log(Level.SEVERE, "An error occurred while initializing the database: " + exception.getMessage());
+            logger.log(Level.SEVERE, "An error occurred while initializing the nl.andrewlalis.activitylogger.database: " + exception.getMessage());
         }
     }
 
     /**
-     * Closes the database connection that this manager has maintained.
+     * Closes the nl.andrewlalis.activitylogger.database connection that this manager has maintained.
      */
     public void close() {
         try {
             this.connection.close();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Could not close connection to the database.");
+            logger.log(Level.SEVERE, "Could not close connection to the nl.andrewlalis.activitylogger.database.");
         }
     }
 
     /**
-     * Inserts an entry into the database at the current time.
+     * Inserts an entry into the nl.andrewlalis.activitylogger.database at the current time.
      * @param entry The entry to add.
      */
     public void insertEntry(Entry entry) {
@@ -74,7 +74,7 @@ public class DatabaseManager {
     }
 
     /**
-     * Selects an entry from the database with the given id.
+     * Selects an entry from the nl.andrewlalis.activitylogger.database with the given id.
      * @param id The id to use to find an entry.
      * @return The entry with the given id, or null if none could be found.
      */

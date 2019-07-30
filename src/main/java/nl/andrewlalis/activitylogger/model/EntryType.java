@@ -1,4 +1,4 @@
-package model;
+package nl.andrewlalis.activitylogger.model;
 
 /**
  * This class holds the different types of entries that can be saved.
