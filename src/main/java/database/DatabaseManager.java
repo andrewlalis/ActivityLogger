@@ -40,6 +40,14 @@ public class DatabaseManager {
         }
     }
 
+    public void close() {
+        try {
+            this.connection.close();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Could not close connection to the database.");
+        }
+    }
+
     /**
      * Selects an entry from the database with the given id.
      * @param id The id to use to find an entry.
