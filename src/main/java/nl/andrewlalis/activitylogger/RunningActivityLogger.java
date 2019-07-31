@@ -2,6 +2,7 @@ package nl.andrewlalis.activitylogger;
 
 import nl.andrewlalis.activitylogger.database.DatabaseManager;
 import nl.andrewlalis.activitylogger.model.Entry;
+import nl.andrewlalis.activitylogger.model.EntryAnalytics;
 import nl.andrewlalis.activitylogger.model.EntryType;
 
 import java.io.BufferedReader;
@@ -68,10 +69,12 @@ public class RunningActivityLogger {
                             for (Entry entry : allEntries) {
                                 System.out.println("\t\t" + entry);
                             }
+
+                            System.out.println("\tTotal effective duration: " + EntryAnalytics.getTotalEffectiveDuration(allEntries).toString());
                         }
                     } else {
                         // Print generic info.
-                        System.out.println(manager.selectEntry(3));
+                        System.out.println("Total duration since last start: " + EntryAnalytics.getTotalEffectiveDuration(manager.selectEntriesSinceMostRecentEntry(EntryType.START, this.user)).toString());
                     }
                 }
             } else {

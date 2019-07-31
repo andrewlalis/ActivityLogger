@@ -2,3 +2,4 @@
 *.class
 *.sqlite3
 .idea
+target
