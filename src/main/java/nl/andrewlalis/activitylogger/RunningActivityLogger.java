@@ -1,5 +1,9 @@
 package nl.andrewlalis.activitylogger;
 
+import nl.andrewlalis.activitylogger.commands.Command;
+import nl.andrewlalis.activitylogger.commands.CommandsManager;
+import nl.andrewlalis.activitylogger.commands.command_executables.ExitCommand;
+import nl.andrewlalis.activitylogger.commands.command_executables.StartCommand;
 import nl.andrewlalis.activitylogger.database.DatabaseManager;
 import nl.andrewlalis.activitylogger.model.Entry;
 import nl.andrewlalis.activitylogger.model.EntryAnalytics;
@@ -10,12 +14,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 public class RunningActivityLogger {
 
     private String user;
     private BufferedReader reader;
+
+    private CommandsManager commandsManager;
 
     private boolean running = true;
 
@@ -25,9 +32,14 @@ public class RunningActivityLogger {
      */
     public RunningActivityLogger() throws IOException {
         this.reader = new BufferedReader(new InputStreamReader(System.in));
-
         System.out.println("Enter a username: ");
         this.user = this.reader.readLine();
+
+        DatabaseManager manager = new DatabaseManager();
+
+        this.commandsManager = new CommandsManager();
+        this.commandsManager.registerCommand("exit", new ExitCommand(this));
+        this.commandsManager.registerCommand("start", new StartCommand(manager, this.user));
     }
 
     /**
@@ -35,7 +47,6 @@ public class RunningActivityLogger {
      * @throws IOException If the program cannot read from standard input.
      */
     public void start() throws IOException {
-        DatabaseManager manager = new DatabaseManager();
 
         while (this.running) {
             System.out.println("Enter a command: ");
@@ -43,6 +54,15 @@ public class RunningActivityLogger {
             String[] words = input.split(" ");
             if (words.length > 0) {
                 String firstWord = words[0];
+                String[] args = Arrays.copyOfRange(words, 1, words.length);
+
+                Command command = this.commandsManager.getCommand(firstWord.toLowerCase());
+                if (command != null) {
+                    command.execute(args);
+                } else {
+                    System.out.println("Please enter a valid command.");
+                }
+
                 if (firstWord.equalsIgnoreCase("exit")) {
                     System.out.println("Exiting.");
                     this.running = false;
@@ -89,5 +109,9 @@ public class RunningActivityLogger {
         }
 
         manager.close();
+    }
+
+    public void setRunning(boolean value) {
+        this.running = value;
     }
 }
