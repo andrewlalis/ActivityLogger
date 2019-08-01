@@ -58,10 +58,16 @@ public class RunningActivityLogger {
                             System.out.println("Information about today's activity logs:");
 
                             Entry mostRecentStart = manager.selectMostRecentEntry(EntryType.START, this.user);
+                            LocalDateTime mostRecentStartTime;
                             LocalDateTime currentTime = LocalDateTime.now();
-                            Duration duration = Duration.between(mostRecentStart.getOccurredAt(), currentTime);
+                            if (mostRecentStart == null) {
+                                mostRecentStartTime = LocalDateTime.now();
+                            } else {
+                                mostRecentStartTime = mostRecentStart.getOccurredAt();
+                            }
+                            Duration duration = Duration.between(mostRecentStartTime, currentTime);
 
-                            System.out.println("\tMost recent start: " + mostRecentStart.getOccurredAt());
+                            System.out.println("\tMost recent start: " + mostRecentStartTime);
                             System.out.println("\tDuration: " + duration.toString());
 
                             List<Entry> allEntries = manager.selectEntriesSinceMostRecentEntry(EntryType.START, this.user);
