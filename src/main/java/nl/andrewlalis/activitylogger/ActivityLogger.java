@@ -45,7 +45,9 @@ public class ActivityLogger {
         } else {
             // Start running application.
             logger.log(Level.FINE, "Starting the running activity logger.");
-            new RunningActivityLogger().start();
+            if (cmd.hasOption("nogui")) {
+                new RunningActivityLogger().start();
+            }
         }
     }
 
@@ -55,9 +57,10 @@ public class ActivityLogger {
      */
     private static Options getOptions() {
         Options options = new Options();
-        options.addOption("l", "log", false, "If this flag is set, a new entry will be logged.");
+        options.addOption("l", "log", false, "If this flag is set, a new entry will be logged, if not, the program will enter interactive mode.");
         options.addOption("t", "entrytype", true, "The type of entry.");
         options.addOption("u", "user", true, "The user to log an entry for.");
+        options.addOption("nogui", false, "Set this flag to start the program in command-line mode, instead of with a user interface.");
         return options;
     }
 
