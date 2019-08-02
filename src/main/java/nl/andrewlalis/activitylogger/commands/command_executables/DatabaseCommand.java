@@ -9,4 +9,10 @@ import nl.andrewlalis.activitylogger.database.DatabaseManager;
 public abstract class DatabaseCommand implements Command {
 
     protected DatabaseManager databaseManager;
+    protected String user;
+
+    public DatabaseCommand(DatabaseManager databaseManager, String user) {
+        this.databaseManager = databaseManager;
+        this.user = user;
+    }
 }

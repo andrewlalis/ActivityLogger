@@ -2,6 +2,7 @@ package nl.andrewlalis.activitylogger.model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
 
@@ -21,9 +22,13 @@ public class EntryAnalytics {
     public static Duration getTotalEffectiveDuration(List<Entry> entries) {
         Stack<Entry> entryStack = new Stack<>();
 
+        entries.sort(Comparator.comparing(Entry::getOccurredAt));
+
         for (int i = entries.size() - 1; i >= 0; i--) {
             entryStack.push(entries.get(i));
         }
+
+
 
         // Pop entries until we get to the first start, since this is where the magic happens.
         Entry startingEntry = null;
@@ -83,6 +88,12 @@ public class EntryAnalytics {
         if (!isStopped && !isPaused) {
             duration = duration.plus(Duration.between(start, LocalDateTime.now()));
         }
+
+        return duration;
+    }
+
+    public static Duration getPausedTime(List<Entry> entries) {
+        Duration duration = Duration.ZERO;
 
         return duration;
     }

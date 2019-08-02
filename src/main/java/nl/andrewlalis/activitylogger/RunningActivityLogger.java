@@ -3,23 +3,21 @@ package nl.andrewlalis.activitylogger;
 import nl.andrewlalis.activitylogger.commands.Command;
 import nl.andrewlalis.activitylogger.commands.CommandsManager;
 import nl.andrewlalis.activitylogger.commands.command_executables.ExitCommand;
-import nl.andrewlalis.activitylogger.commands.command_executables.StartCommand;
+import nl.andrewlalis.activitylogger.commands.command_executables.InfoCommand;
+import nl.andrewlalis.activitylogger.commands.command_executables.LogEntryCommand;
 import nl.andrewlalis.activitylogger.database.DatabaseManager;
-import nl.andrewlalis.activitylogger.model.Entry;
-import nl.andrewlalis.activitylogger.model.EntryAnalytics;
 import nl.andrewlalis.activitylogger.model.EntryType;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 
+/**
+ * An interactive interface for the activity logger, that provides a command-line way to log data and retrieve data.
+ */
 public class RunningActivityLogger {
 
-    private String user;
     private BufferedReader reader;
 
     private CommandsManager commandsManager;
@@ -33,17 +31,27 @@ public class RunningActivityLogger {
     public RunningActivityLogger() throws IOException {
         this.reader = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Enter a username: ");
-        this.user = this.reader.readLine();
+        String user = this.reader.readLine();
 
         DatabaseManager manager = new DatabaseManager();
 
         this.commandsManager = new CommandsManager();
+
         this.commandsManager.registerCommand("exit", new ExitCommand(this));
-        this.commandsManager.registerCommand("start", new StartCommand(manager, this.user));
+        this.commandsManager.registerCommand("start", new LogEntryCommand(manager, user, EntryType.START));
+        this.commandsManager.registerCommand("stop", new LogEntryCommand(manager, user, EntryType.STOP));
+        this.commandsManager.registerCommand("pause", new LogEntryCommand(manager, user, EntryType.PAUSE));
+        this.commandsManager.registerCommand("unpause", new LogEntryCommand(manager, user, EntryType.UNPAUSE));
+        this.commandsManager.registerCommand("info", new InfoCommand(manager, user));
     }
 
     /**
      * Starts the continuous loop of checking for input commands, and processing them.
+     *
+     * The user will enter a word, or multiple words separated by spaces, and the first word will be considered as a
+     * command keyword. Then, the commands manager tries to retrieve the user's intended command and execute it, passing
+     * any additional words as arguments to the command.
+     *
      * @throws IOException If the program cannot read from standard input.
      */
     public void start() throws IOException {
@@ -60,57 +68,18 @@ public class RunningActivityLogger {
                 if (command != null) {
                     command.execute(args);
                 } else {
-                    System.out.println("Please enter a valid command.");
-                }
-
-                if (firstWord.equalsIgnoreCase("exit")) {
-                    System.out.println("Exiting.");
-                    this.running = false;
-                } else if (firstWord.equalsIgnoreCase("log")) {
-                    if (words.length > 1) {
-                        String secondWord = words[1];
-                        manager.insertEntry(new Entry(EntryType.valueOf(secondWord.toUpperCase()), this.user));
-                    }
-                } else if (firstWord.equalsIgnoreCase("info")) {
-                    if (words.length > 1) {
-                        String secondWord = words[1];
-                        if (secondWord.equalsIgnoreCase("today")) {
-                            System.out.println("Information about today's activity logs:");
-
-                            Entry mostRecentStart = manager.selectMostRecentEntry(EntryType.START, this.user);
-                            LocalDateTime mostRecentStartTime;
-                            LocalDateTime currentTime = LocalDateTime.now();
-                            if (mostRecentStart == null) {
-                                mostRecentStartTime = LocalDateTime.now();
-                            } else {
-                                mostRecentStartTime = mostRecentStart.getOccurredAt();
-                            }
-                            Duration duration = Duration.between(mostRecentStartTime, currentTime);
-
-                            System.out.println("\tMost recent start: " + mostRecentStartTime);
-                            System.out.println("\tDuration: " + duration.toString());
-
-                            List<Entry> allEntries = manager.selectEntriesSinceMostRecentEntry(EntryType.START, this.user);
-                            System.out.println("\tEntries since the most recent start: ");
-                            for (Entry entry : allEntries) {
-                                System.out.println("\t\t" + entry);
-                            }
-
-                            System.out.println("\tTotal effective duration: " + EntryAnalytics.getTotalEffectiveDuration(allEntries).toString());
-                        }
-                    } else {
-                        // Print generic info.
-                        System.out.println("Total duration since last start: " + EntryAnalytics.getTotalEffectiveDuration(manager.selectEntriesSinceMostRecentEntry(EntryType.START, this.user)).toString());
-                    }
+                    System.out.println("Command not recognized. Please enter a valid command.");
                 }
             } else {
                 System.out.println("Please enter commands as space-separated words.");
             }
         }
-
-        manager.close();
     }
 
+    /**
+     * Allow external control over when to quit this activity logger.
+     * @param value Set this to false to quit the activity logger.
+     */
     public void setRunning(boolean value) {
         this.running = value;
     }
