@@ -19,11 +19,19 @@ public class ActivityLogger {
 
     private static final Logger logger = Logger.getLogger(ActivityLogger.class.getName());
 
+    /**
+     * The main method where the program starts.
+     *
+     * @param args Any arguments passed via the command-line.
+     * @throws ParseException If it is not possible to parse the options from the command line.
+     * @throws IOException If something goes wrong when trying to read or write to/from the database.
+     */
     public static void main(String[] args) throws ParseException, IOException {
         logger.log(Level.INFO, "Starting ActivityLogger...");
 
         CommandLine cmd = new DefaultParser().parse(getOptions(), args);
 
+        // Check first if the 'log' option is provided, in which case the user wants to immediately add a log entry from the command-line.
         if (cmd.hasOption("l")) {
             if (!cmd.hasOption("t")) {
                 logger.log(Level.WARNING, "No entry type has been provided.");
@@ -43,7 +51,7 @@ public class ActivityLogger {
                 }
             }
         } else {
-            // Start running application.
+            // Since no 'log' option is provided, assume that the user wants the interactive application.
             logger.log(Level.FINE, "Starting the running activity logger.");
             if (cmd.hasOption("nogui")) {
                 new RunningActivityLogger().start();
