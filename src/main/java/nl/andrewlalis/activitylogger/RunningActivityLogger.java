@@ -7,10 +7,11 @@ import nl.andrewlalis.activitylogger.commands.command_executables.InfoCommand;
 import nl.andrewlalis.activitylogger.commands.command_executables.LogEntryCommand;
 import nl.andrewlalis.activitylogger.database.DatabaseManager;
 import nl.andrewlalis.activitylogger.model.EntryType;
+import nl.andrewlalis.activitylogger.view.CommandLineView;
+import nl.andrewlalis.activitylogger.view.UserInteractable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 
 /**
@@ -24,14 +25,15 @@ public class RunningActivityLogger {
 
     private boolean running = true;
 
+    private UserInteractable interactableInterface;
+
     /**
      * Initializes the running activity logger and asks the user for their name.
      * @throws IOException If the program cannot read from standard input.
      */
     public RunningActivityLogger() throws IOException {
-        this.reader = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Enter a username: ");
-        String user = this.reader.readLine();
+        this.interactableInterface = new CommandLineView();
+        String user = this.interactableInterface.promptForInput("Enter a username: ");
 
         DatabaseManager manager = new DatabaseManager();
 
@@ -57,8 +59,7 @@ public class RunningActivityLogger {
     public void start() throws IOException {
 
         while (this.running) {
-            System.out.println("Enter a command: ");
-            String input = this.reader.readLine();
+            String input = this.interactableInterface.promptForInput("Enter a command: ");
             String[] words = input.split(" ");
             if (words.length > 0) {
                 String firstWord = words[0];
@@ -68,10 +69,10 @@ public class RunningActivityLogger {
                 if (command != null) {
                     command.execute(args);
                 } else {
-                    System.out.println("Command not recognized. Please enter a valid command.");
+                    this.interactableInterface.showErrorMessage("Command not recognized. Please enter a valid command.");
                 }
             } else {
-                System.out.println("Please enter commands as space-separated words.");
+                this.interactableInterface.showErrorMessage("Please enter commands as space-separated words.");
             }
         }
     }
