@@ -28,11 +28,11 @@ public class RunningActivityLogger {
     private UserInteractable interactableInterface;
 
     /**
-     * Initializes the running activity logger and asks the user for their name.
-     * @throws IOException If the program cannot read from standard input.
+     * Constructs the running activity logger with a custom user-interaction interface.
+     * @param interactableInterface The interface between the program and user input and output.
      */
-    public RunningActivityLogger() throws IOException {
-        this.interactableInterface = new CommandLineView();
+    public RunningActivityLogger(UserInteractable interactableInterface) {
+        this.interactableInterface = interactableInterface;
         String user = this.interactableInterface.promptForInput("Enter a username: ");
 
         DatabaseManager manager = new DatabaseManager();
@@ -45,6 +45,14 @@ public class RunningActivityLogger {
         this.commandsManager.registerCommand("pause", new LogEntryCommand(manager, user, EntryType.PAUSE));
         this.commandsManager.registerCommand("unpause", new LogEntryCommand(manager, user, EntryType.UNPAUSE));
         this.commandsManager.registerCommand("info", new InfoCommand(manager, user));
+    }
+
+    /**
+     * Initializes the running activity logger and asks the user for their name.
+     * @throws IOException If the program cannot read from standard input.
+     */
+    public RunningActivityLogger() throws IOException {
+        this(new CommandLineView());
     }
 
     /**

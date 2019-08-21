@@ -28,6 +28,7 @@ public class ActivityLogger {
      */
     public static void main(String[] args) throws ParseException, IOException {
         logger.log(Level.INFO, "Starting ActivityLogger...");
+        Logger.getGlobal().setLevel(Level.ALL);
 
         CommandLine cmd = new DefaultParser().parse(getOptions(), args);
 
