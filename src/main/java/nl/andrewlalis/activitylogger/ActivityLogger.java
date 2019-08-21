@@ -8,7 +8,6 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,9 +23,8 @@ public class ActivityLogger {
      *
      * @param args Any arguments passed via the command-line.
      * @throws ParseException If it is not possible to parse the options from the command line.
-     * @throws IOException If something goes wrong when trying to read or write to/from the database.
      */
-    public static void main(String[] args) throws ParseException, IOException {
+    public static void main(String[] args) throws ParseException {
         logger.log(Level.INFO, "Starting ActivityLogger...");
         Logger.getGlobal().setLevel(Level.ALL);
 

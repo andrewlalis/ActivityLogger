@@ -10,16 +10,12 @@ import nl.andrewlalis.activitylogger.model.EntryType;
 import nl.andrewlalis.activitylogger.view.CommandLineView;
 import nl.andrewlalis.activitylogger.view.UserInteractable;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.Arrays;
 
 /**
  * An interactive interface for the activity logger, that provides a command-line way to log data and retrieve data.
  */
 public class RunningActivityLogger {
-
-    private BufferedReader reader;
 
     private CommandsManager commandsManager;
 
@@ -49,9 +45,8 @@ public class RunningActivityLogger {
 
     /**
      * Initializes the running activity logger and asks the user for their name.
-     * @throws IOException If the program cannot read from standard input.
      */
-    public RunningActivityLogger() throws IOException {
+    public RunningActivityLogger() {
         this(new CommandLineView());
     }
 
@@ -61,10 +56,8 @@ public class RunningActivityLogger {
      * The user will enter a word, or multiple words separated by spaces, and the first word will be considered as a
      * command keyword. Then, the commands manager tries to retrieve the user's intended command and execute it, passing
      * any additional words as arguments to the command.
-     *
-     * @throws IOException If the program cannot read from standard input.
      */
-    public void start() throws IOException {
+    public void start() {
 
         while (this.running) {
             String input = this.interactableInterface.promptForInput("Enter a command: ");
