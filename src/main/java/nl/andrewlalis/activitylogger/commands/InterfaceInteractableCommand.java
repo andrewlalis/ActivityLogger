@@ -9,7 +9,7 @@ public interface InterfaceInteractableCommand extends Command {
 	/**
 	 * Executes this command.
 	 * @param args The arguments to pass to it.
-	 * @param interactable
+	 * @param interactable The interactable interface in which this command may communicate with the user.
 	 */
 	void execute(String[] args, UserInteractable interactable);
 }
