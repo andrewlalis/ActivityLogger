@@ -7,6 +7,7 @@ import nl.andrewlalis.activitylogger.commands.command_executables.InfoCommand;
 import nl.andrewlalis.activitylogger.commands.command_executables.LogEntryCommand;
 import nl.andrewlalis.activitylogger.database.DatabaseManager;
 import nl.andrewlalis.activitylogger.model.EntryType;
+import nl.andrewlalis.activitylogger.view.CommandIntention;
 import nl.andrewlalis.activitylogger.view.CommandLineView;
 import nl.andrewlalis.activitylogger.view.UserInteractable;
 
@@ -60,21 +61,19 @@ public class RunningActivityLogger {
     public void start() {
 
         while (this.running) {
-            String input = this.interactableInterface.promptForInput("Enter a command: ");
-            String[] words = input.split(" ");
-            if (words.length > 0) {
-                String firstWord = words[0];
-                String[] args = Arrays.copyOfRange(words, 1, words.length);
-
-                Command command = this.commandsManager.getCommand(firstWord.toLowerCase());
-                if (command != null) {
-                    command.execute(args);
-                } else {
-                    this.interactableInterface.showErrorMessage("Command not recognized. Please enter a valid command.");
-                }
-            } else {
+            CommandIntention intention = this.getCommandIntentionFromInput();
+            if (intention == null) {
                 this.interactableInterface.showErrorMessage("Please enter commands as space-separated words.");
+                continue;
             }
+
+            Command command = this.commandsManager.getCommand(intention.getCommand());
+            if (command == null) {
+                this.interactableInterface.showErrorMessage("Command not recognized. Please enter a valid command.");
+                continue;
+            }
+
+            command.execute(intention.getArgs());
         }
     }
 
@@ -84,5 +83,22 @@ public class RunningActivityLogger {
      */
     public void setRunning(boolean value) {
         this.running = value;
+    }
+
+    /**
+     * Prompts the user to enter a command, and returns an object representing the user's intention to execute that
+     * command.
+     *
+     * @return The intention to execute a command, or null if the user doesn't enter anything valid.
+     */
+    private CommandIntention getCommandIntentionFromInput() {
+        String input = this.interactableInterface.promptForInput("Enter a command: ");
+        String[] words = input.split(" ");
+        if (words.length > 0) {
+            String firstWord = words[0];
+            String[] args = Arrays.copyOfRange(words, 1, words.length);
+            return new CommandIntention(firstWord.toLowerCase(), args);
+        }
+        return null;
     }
 }
