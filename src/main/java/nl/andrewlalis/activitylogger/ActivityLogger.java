@@ -38,17 +38,7 @@ public class ActivityLogger {
             } else if (!cmd.hasOption("u")) {
                 logger.log(Level.WARNING, "No user has been provided.");
             } else {
-                // Log a new entry.
-                EntryType entryType = EntryType.valueOf(cmd.getOptionValue(entryTypeOption.getOpt(), EntryType.START.name()).toUpperCase());
-                String user = cmd.getOptionValue(userOption.getOpt(), null);
-
-                if (user == null) {
-                    logger.log(Level.WARNING, "The given user is null.");
-                } else {
-                    DatabaseManager manager = new DatabaseManager();
-                    manager.insertEntry(new Entry(entryType, user));
-                    manager.close();
-                }
+                logSingleEntry(cmd);
             }
         } else {
             // Since no 'log' option is provided, assume that the user wants the interactive application.
@@ -61,4 +51,23 @@ public class ActivityLogger {
         }
     }
 
+    /**
+     *
+     *
+     * @param cmd A reference to the command line object.
+     */
+    private static void logSingleEntry(CommandLine cmd) {
+        // Get the entry type the user has given, or default to a START type.
+        EntryType entryType = EntryType.valueOf(cmd.getOptionValue(entryTypeOption.getOpt(), EntryType.START.name()).toUpperCase());
+        // Get the user.
+        String user = cmd.getOptionValue(userOption.getOpt(), null);
+        if (user == null) {
+            logger.log(Level.WARNING, "The given user is null.");
+            return;
+        }
+
+        DatabaseManager manager = new DatabaseManager();
+        manager.insertEntry(new Entry(entryType, user));
+        manager.close();
+    }
 }
