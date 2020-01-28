@@ -11,6 +11,12 @@ public abstract class DatabaseCommand implements Command {
     protected DatabaseManager databaseManager;
     protected String user;
 
+    /**
+     * Constructs a new database command.
+     *
+     * @param databaseManager The manager that will be provided to the command when it's executed.
+     * @param user The user executing the command.
+     */
     public DatabaseCommand(DatabaseManager databaseManager, String user) {
         this.databaseManager = databaseManager;
         this.user = user;
