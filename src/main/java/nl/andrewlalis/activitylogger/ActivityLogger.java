@@ -3,8 +3,9 @@ package nl.andrewlalis.activitylogger;
 import nl.andrewlalis.activitylogger.database.DatabaseManager;
 import nl.andrewlalis.activitylogger.model.Entry;
 import nl.andrewlalis.activitylogger.model.EntryType;
-import nl.andrewlalis.activitylogger.util.CommandLineOptions;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.ParseException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -54,6 +55,8 @@ public class ActivityLogger {
             logger.log(Level.FINE, "Starting the running activity logger.");
             if (cmd.hasOption(noGuiOption.getOpt())) {
                 new RunningActivityLogger().start();
+            } else {
+                // TODO: Start a swing activity logger thing.
             }
         }
     }
