@@ -6,7 +6,7 @@ package nl.andrewlalis.activitylogger.commands;
 public interface Command {
     /**
      * Executes this command, with the given arguments.
-     * @param args The list of arguments the user has given to this commmand.
+     * @param args The list of arguments the user has given to this command.
      */
     void execute(String[] args);
 }

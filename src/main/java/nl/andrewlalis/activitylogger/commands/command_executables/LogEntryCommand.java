@@ -19,6 +19,11 @@ public class LogEntryCommand extends DatabaseCommand {
         this.entryType = entryType;
     }
 
+    /**
+     * Executes this command, and enters a new entry of the pre-defined type.
+     *
+     * @param args The list of arguments the user has given to this command. In this case, it's not needed at all.
+     */
     @Override
     public void execute(String[] args) {
         this.databaseManager.insertEntry(new Entry(this.entryType, this.user));
