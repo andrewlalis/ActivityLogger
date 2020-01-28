@@ -52,7 +52,7 @@ public class ActivityLogger {
     }
 
     /**
-     *
+     * Handles the case where a user has invoked the program with the purpose of logging a single entry.
      *
      * @param cmd A reference to the command line object.
      */
